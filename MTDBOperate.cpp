@@ -1,9 +1,9 @@
 /************************************************************************/
-/* ÎÄ¼þÃû³Æ£ºMTDBOperate.cpp
-/* ¹¦ÄÜ½éÉÜ£º·þÎñ¶Ë²Ù×÷MySQL½Ó¿Úº¯Êý ¡ª¡ª ÊµÏÖ
-/* µ±Ç°°æ±¾£º1.0
-/* ÐÞ¸Ä¼ÇÂ¼£º
-/* 2017-06-02	È¡ÊµÊ±·µµã±ÈÀý
+/* æ–‡ä»¶åç§°ï¼šMTDBOperate.cpp
+/* åŠŸèƒ½ä»‹ç»ï¼šæœåŠ¡ç«¯æ“ä½œMySQLæŽ¥å£å‡½æ•° â€”â€” å®žçŽ°
+/* å½“å‰ç‰ˆæœ¬ï¼š1.0
+/* ä¿®æ”¹è®°å½•ï¼š
+/* 2017-06-02	å–å®žæ—¶è¿”ç‚¹æ¯”ä¾‹
 /************************************************************************/
 #include "MTDBOperate.h"
 #include "../Common/MD5.h"
@@ -13,18 +13,18 @@
 
 // MySQL Table
 #define DB_TABLE_USER	"db_custom_user"
-#define DB_USER_UID		"mt_uid"			// uint
+#define DB_USER_UID	"mt_uid"		// uint
 #define DB_USER_NAME	"mt_username"		// string
 #define DB_USER_PASS	"mt_password"		// string
 
-CDBConnectionPool 	*g_pDBConnectionPool = NULL;			// SQLÏß³Ì³Ø
-volatile char		m_szSQLServer[MAX_PATH] = "127.0.0.1";	// SQL·þÎñÆ÷
-volatile char		m_szSQLUser[MAX_PATH] = "root";			// SQLÓÃ»§Ãû
-volatile char		m_szSQLPass[MAX_PATH] = "123456";		// SQLÃÜÂë
-volatile char		m_szSQLDB[MAX_PATH] = "test";			// SQLÊý¾Ý¿â
-volatile DWORD		m_nSQLPort = 3306;						// SQL¶Ë¿Ú
+CDBConnectionPool 	*g_pDBConnectionPool = NULL;			// SQLçº¿ç¨‹æ± 
+volatile char		m_szSQLServer[MAX_PATH] = "127.0.0.1";		// SQLæœåŠ¡å™¨
+volatile char		m_szSQLUser[MAX_PATH] = "root";			// SQLç”¨æˆ·å
+volatile char		m_szSQLPass[MAX_PATH] = "123456";		// SQLå¯†ç 
+volatile char		m_szSQLDB[MAX_PATH] = "test";			// SQLæ•°æ®åº“
+volatile DWORD		m_nSQLPort = 3306;				// SQLç«¯å£
 
-// ³õÊ¼»¯MySQLÏß³Ì³Ø
+// åˆå§‹åŒ–MySQLçº¿ç¨‹æ± 
 BOOL MTInitDBConnect(WORD nThreadNum)
 {
 	if(g_pDBConnectionPool != NULL)
@@ -41,7 +41,7 @@ BOOL MTInitDBConnect(WORD nThreadNum)
 	return g_pDBConnectionPool->CreateConnectionPool();
 }
 
-// ÊÍ·ÅMySQLÏß³Ì³Ø
+// é‡Šæ”¾MySQLçº¿ç¨‹æ± 
 void MTDBFreeSQLPool()
 {
 	try
@@ -56,7 +56,7 @@ void MTDBFreeSQLPool()
 	catch (...){}
 }
 
-// ¼ì²éMySQLÁ¬½Ó
+// æ£€æŸ¥MySQLè¿žæŽ¥
 BOOL MTInitDBPing()
 {
 	if(g_pDBConnectionPool)
@@ -65,7 +65,7 @@ BOOL MTInitDBPing()
 	return FALSE;
 }
 
-// Ê¹ÓÃ·½·¨
+// ä½¿ç”¨æ–¹æ³•
 int main()
 {
 	CDBConnection	*pConnect	= NULL;
@@ -77,7 +77,7 @@ int main()
 	char			szPass[] = "admin";
 	
 	//////////////////////////////////////////////////////////////////////////
-	// ³õÈç»¯MySQLÏß³Ì³ØÊýÁ¿
+	// åˆå¦‚åŒ–MySQLçº¿ç¨‹æ± æ•°é‡
 	bRet = MTInitDBConnect(4);
 	if(!bRet)
 	{
@@ -85,8 +85,8 @@ int main()
 		goto STEP_END;
 	}
 	
-	// »ñÈ¡Ò»¸ö¿ÕÏÐÁ¬½Ó
-	pConnect = pDBConnectionPool->GetConnection();
+	// èŽ·å–ä¸€ä¸ªç©ºé—²è¿žæŽ¥
+	pConnect = g_pDBConnectionPool->GetConnection();
 	if(pConnect == NULL)
 	{
 		printf("GetConnection failed, all thread is busy.\n");
@@ -94,7 +94,7 @@ int main()
 	}
 	
 	//////////////////////////////////////////////////////////////////////////
-	// Ö´ÐÐÒ»¸ö²éÑ¯Óï¾äSelect
+	// æ‰§è¡Œä¸€ä¸ªæŸ¥è¯¢è¯­å¥Select
 	memset(szSQL,0x00,MYSQL_STRING_LEN);
 	wsprintf(szSQL,_T("SELECT * FROM `%s` where `%s` = \"%s\" AND `%s` = \"%s\""),DB_TABLE_USER,DB_USER_NAME,szUser,,DB_USER_PASS,szPass);
 
@@ -105,7 +105,7 @@ int main()
 		goto STEP_END;
 	}
 	
-	// Èç¹ûÃ»ÓÐÈÎºÎ¼ÇÂ¼
+	// å¦‚æžœæ²¡æœ‰ä»»ä½•è®°å½•
 	if(pRecordset->GetRowCount() == 0)
 	{
 		delete pRecordset;
