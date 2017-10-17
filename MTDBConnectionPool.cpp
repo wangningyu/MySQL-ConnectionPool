@@ -1,8 +1,8 @@
 /************************************************************************/
-/* ÎÄ¼şÃû³Æ£ºMTDBConnectionPool.cpp
-/* ¹¦ÄÜ½éÉÜ£ºÊı¾İ¿âÁ¬½Ó³Ø
-/* µ±Ç°°æ±¾£º1.0
-/* ĞŞ¸Ä¼ÇÂ¼£ºÎŞ
+/* æ–‡ä»¶åç§°ï¼šMTDBConnectionPool.cpp
+/* åŠŸèƒ½ä»‹ç»ï¼šæ•°æ®åº“è¿æ¥æ± 
+/* å½“å‰ç‰ˆæœ¬ï¼š1.0
+/* ä¿®æ”¹è®°å½•ï¼šæ— 
 /************************************************************************/
 #include "StdAfx.h"
 #include "MTDBDef.h"
@@ -21,7 +21,7 @@ BOOL __stdcall MTInitUTF8(CDBConnection *pConnection)
 
 	if(!pConnection->Execute(_T("set names 'utf8'"), dwId))
 	{
-		AddSQLLog("db_InitUTF8 failed.");
+		AddSQLLog("MTInitUTF8 failed.");
 		return FALSE;
 	}
 
@@ -51,7 +51,7 @@ CDBConnectionPool::~CDBConnectionPool()
 	
 bool CDBConnectionPool::SetMaxPoolNum(WORD wMaxPoolNum)
 {
-	//¶¯Ì¬ÉèÖÃÖ»ÄÜ±ÈÏÖÓĞÁ¬½Ó³ØÊıÁ¿´ó
+	//åŠ¨æ€è®¾ç½®åªèƒ½æ¯”ç°æœ‰è¿æ¥æ± æ•°é‡å¤§
 	if(wMaxPoolNum < m_wMaxPoolNum)
 		return false;
 
@@ -78,13 +78,12 @@ WORD CDBConnectionPool::CreateConnectionPool()
 		nRet = pDBConnection->Connect();
 		if(nRet == 0)
 		{
-			printf(_T("%sÁ¬½ÓMySQLÊ§°Ü£¬´íÎóÔ­Òò: %s\n"),EXE_TITLE,pDBConnection->GetErrorMsg().c_str());
+			printf(_T("%sè¿æ¥MySQLå¤±è´¥ï¼Œé”™è¯¯åŸå› : %s\n"),EXE_TITLE,pDBConnection->GetErrorMsg().c_str());
 			return 0;
 		}
 	}
 
-	printf(_T("%sÁ¬½ÓMySQL³É¹¦£¬(ºÄÊ±:%d ms)\n"),EXE_TITLE,GetTickCount() - nStart);
-	db_InitUserAdmin();
+	printf(_T("%sè¿æ¥MySQLæˆåŠŸï¼Œ(è€—æ—¶:%d ms)\n"),EXE_TITLE,GetTickCount() - nStart);
 	return m_wMaxPoolNum;
 }
 
@@ -131,7 +130,7 @@ CDBConnection * CDBConnectionPool::GetConnection()
 	return NULL;
 }
 
-// ±£³ÖÔÚÏß,·ÀÖ¹MYSQL×Ô¶¯¹Ø±Õ¿ÕÏĞÁ¬½Ó
+// ä¿æŒåœ¨çº¿,é˜²æ­¢MYSQLè‡ªåŠ¨å…³é—­ç©ºé—²è¿æ¥
 BOOL CDBConnectionPool::ExecUTF8()
 {
 	for(WORD wi=0; wi<m_wMaxPoolNum; wi++)
