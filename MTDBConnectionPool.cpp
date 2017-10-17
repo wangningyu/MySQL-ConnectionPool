@@ -13,7 +13,20 @@ extern volatile char		m_szSQLPass[MAX_PATH];
 extern volatile char		m_szSQLDB[MAX_PATH];
 extern volatile DWORD		m_nSQLPort;
 
-extern BOOL __stdcall db_InitUTF8(CDBConnection *pConnection);
+BOOL __stdcall MTInitUTF8(CDBConnection *pConnection)
+{
+	ULONGLONG	dwId = 0;
+	if(pConnection == NULL)
+		return FALSE;
+
+	if(!pConnection->Execute(_T("set names 'utf8'"), dwId))
+	{
+		AddSQLLog("db_InitUTF8 failed.");
+		return FALSE;
+	}
+
+	return TRUE;
+}
 
 CDBConnectionPool::CDBConnectionPool()
 {
@@ -118,6 +131,7 @@ CDBConnection * CDBConnectionPool::GetConnection()
 	return NULL;
 }
 
+// 保持在线,防止MYSQL自动关闭空闲连接
 BOOL CDBConnectionPool::ExecUTF8()
 {
 	for(WORD wi=0; wi<m_wMaxPoolNum; wi++)
@@ -125,7 +139,7 @@ BOOL CDBConnectionPool::ExecUTF8()
 		CDBConnection * pDBConnection = (CDBConnection *)&m_pDBConnection[wi];
 		if(pDBConnection && pDBConnection->IsIdle()) 
 		{
-			db_InitUTF8(pDBConnection);
+			MTInitUTF8(pDBConnection);
 		}
 	}
 	
